@@ -1,0 +1,71 @@
+{{template "base" .}}
+{{define "title"}}Профіль — VibeChat{{end}}
+{{define "body"}}
+<div class="app-layout">
+  {{template "sidebar" .}}
+
+  <div class="main-content" style="overflow-y: auto;">
+    <div class="profile-page fade-in">
+
+      <div class="profile-header">
+        <div class="user-avatar">
+          <div class="avatar avatar-xl">
+            {{if .ProfileUser.Avatar}}
+              <img src="/media/{{.ProfileUser.Avatar}}" alt="{{.ProfileUser.Username}}">
+            {{else}}
+              {{.ProfileUser.GetInitials}}
+            {{end}}
+          </div>
+          <div class="online-dot" style="width: 14px; height: 14px; border-width: 3px;"></div>
+        </div>
+        <div>
+          <h1 style="font-size: 22px; font-weight: 800;">{{.ProfileUser.Username}}</h1>
+          <p style="color: var(--text-secondary); font-size: 14px;">{{.ProfileUser.Email}}</p>
+          {{if .ProfileUser.Bio}}
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 6px;">{{.ProfileUser.Bio}}</p>
+          {{end}}
+        </div>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" class="profile-form" action="/accounts/profile/">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">Ім'я</label>
+            <input type="text" name="first_name" class="form-input" placeholder="Ім'я" value="{{.ProfileUser.FirstName}}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Прізвище</label>
+            <input type="text" name="last_name" class="form-input" placeholder="Прізвище" value="{{.ProfileUser.LastName}}">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Про себе</label>
+          <textarea name="bio" class="form-input" rows="3" placeholder="Про себе...">{{.ProfileUser.Bio}}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Аватар</label>
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            {{if .ProfileUser.Avatar}}
+              <img src="/media/{{.ProfileUser.Avatar}}" alt="avatar" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+            {{end}}
+            <input type="file" name="avatar" class="form-input" accept="image/*">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+          <button type="submit" class="btn btn-primary" style="width: auto;">
+            💾 Зберегти зміни
+          </button>
+          <a href="/" class="btn btn-ghost">Назад</a>
+          <a href="/accounts/logout/" class="btn btn-danger btn-sm" style="margin-left: auto;">
+            🚪 Вийти
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{end}}

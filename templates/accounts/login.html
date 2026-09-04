@@ -1,0 +1,93 @@
+{{template "base" .}}
+{{define "title"}}Увійти — VibeChat{{end}}
+{{define "body"}}
+<div class="auth-page">
+  <div class="auth-card fade-in">
+
+    <div class="auth-logo">
+      <div class="logo-icon">💬</div>
+      <span class="logo-text">VibeChat P2P</span>
+    </div>
+
+    <h1 class="auth-title">З поверненням! 👋</h1>
+    <p class="auth-subtitle">Увійдіть за допомогою вашого ключ-файлу</p>
+
+    <form class="auth-form" id="login-form">
+      <div id="login-error" class="form-error" style="display:none; text-align: center; justify-content: center; margin-bottom: 10px;">⚠️ Неправильний пароль або файл</div>
+
+      <div class="form-group">
+        <label class="form-label" for="keyfile">Файл ключів (.json)</label>
+        <input type="file" name="keyfile" id="keyfile" class="form-input" accept=".json" required style="padding-top: 10px;">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Пароль (Для розшифровки)</label>
+        <input type="password" name="password" id="password" class="form-input" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submit-btn">
+        🔓 Розшифрувати та Увійти
+      </button>
+    </form>
+    
+    <div id="loading" style="display: none; text-align: center; margin-top: 20px;">
+        <p style="color: var(--accent); font-weight: 600;">Перевірка криптографії... ⏳</p>
+    </div>
+
+    <div class="auth-footer">
+      Немає ключ-файлу? <a href="/accounts/register/">Створити</a>
+    </div>
+
+  </div>
+</div>
+{{end}}
+{{define "extra_js"}}
+<script src="/static/js/crypto.js"></script>
+<script>
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const loading = document.getElementById('loading');
+    const errDiv = document.getElementById('login-error');
+    
+    const fileInput = document.getElementById('keyfile');
+    const password = document.getElementById('password').value;
+    
+    if(!fileInput.files.length || !password) return;
+    
+    btn.style.display = 'none';
+    loading.style.display = 'block';
+    errDiv.style.display = 'none';
+    
+    try {
+        const file = fileInput.files[0];
+        const text = await file.text();
+        const keystore = JSON.parse(text);
+        
+        if (!keystore.encryptedPrivateKey || !keystore.publicKey || !keystore.username) {
+            throw new Error("Invalid Keystore format");
+        }
+        
+        // Decrypt private key
+        const privJwk = await window.VibeCrypto.decryptPrivateKey(keystore.encryptedPrivateKey, password);
+        
+        // Verify key by importing
+        await window.VibeCrypto.importPrivateKey(privJwk);
+        
+        // Save to localStorage
+        localStorage.setItem('vibe_username', keystore.username);
+        localStorage.setItem('vibe_pubkey', JSON.stringify(keystore.publicKey));
+        localStorage.setItem('vibe_privkey', JSON.stringify(privJwk));
+        
+        window.location.href = "/";
+        
+    } catch(err) {
+        console.error(err);
+        errDiv.innerText = "⚠️ Неправильний пароль або пошкоджений файл";
+        errDiv.style.display = 'flex';
+        btn.style.display = 'block';
+        loading.style.display = 'none';
+    }
+});
+</script>
+{{end}}

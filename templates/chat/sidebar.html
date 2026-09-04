@@ -1,0 +1,69 @@
+{{define "sidebar"}}
+<div class="sidebar">
+  <div class="sidebar-header">
+    <a href="/" class="logo">
+      <div class="logo-icon">💬</div>
+      <span class="logo-text">VibeChat</span>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="/" class="nav-item">
+      <span class="icon">🏠</span> Головна
+    </a>
+    <a href="/users/" class="nav-item">
+      <span class="icon">👥</span> Користувачі
+    </a>
+    <a href="/room/create/" class="nav-item">
+      <span class="icon">➕</span> Нова кімната
+    </a>
+  </nav>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">
+      Публічні кімнати
+      <a href="/room/create/" title="Створити">+</a>
+    </div>
+    {{range .PublicRoomsNav}}
+      <a href="/room/{{.Slug}}/" class="room-item {{if eq $.CurrentRoomSlug .Slug}}active{{end}}">
+        <span class="room-icon">{{.Icon}}</span>
+        <span class="room-name">{{.Name}}</span>
+      </a>
+    {{else}}
+      <div style="padding: 8px 12px; font-size: 13px; color: var(--text-muted);">Немає кімнат</div>
+    {{end}}
+
+    {{if .MyRoomsNav}}
+      <div class="sidebar-section-title" style="margin-top: 12px;">Мої кімнати</div>
+      {{range .MyRoomsNav}}
+        <a href="/room/{{.Slug}}/" class="room-item {{if eq $.CurrentRoomSlug .Slug}}active{{end}}">
+          <span class="room-icon">{{.Icon}}</span>
+          <span class="room-name">{{.Name}}</span>
+          {{if eq .RoomType "private"}}<span style="font-size:10px;opacity:0.5">🔒</span>{{end}}
+        </a>
+      {{end}}
+    {{end}}
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-avatar">
+      <div class="avatar avatar-sm">
+        {{if .User.Avatar}}
+          <img src="/media/{{.User.Avatar}}" alt="{{.User.Username}}">
+        {{else}}
+          {{.User.GetInitials}}
+        {{end}}
+      </div>
+      <div class="online-dot"></div>
+    </div>
+    <div class="user-info">
+      <div class="user-name">{{.User.Username}}</div>
+      <div class="user-status">● онлайн</div>
+    </div>
+    <div class="sidebar-footer-actions">
+      <a href="/accounts/profile/" class="icon-btn" title="Профіль">⚙️</a>
+      <a href="/accounts/logout/" class="icon-btn" title="Вийти">🚪</a>
+    </div>
+  </div>
+</div>
+{{end}}

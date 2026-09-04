@@ -1,0 +1,97 @@
+{{template "base" .}}
+{{define "title"}}DM: {{.OtherUser.Username}} — VibeChat{{end}}
+{{define "body"}}
+<div class="app-layout">
+  {{template "sidebar" .}}
+
+  <div class="main-content">
+    <div class="chat-header">
+      <div class="user-avatar">
+        <div class="avatar avatar-md">
+          {{if .OtherUser.Avatar}}
+            <img src="/media/{{.OtherUser.Avatar}}" alt="{{.OtherUser.Username}}">
+          {{else}}
+            {{.OtherUserInitials}}
+          {{end}}
+        </div>
+        <div class="online-dot {{if not .OtherUser.IsOnline}}offline{{end}}"></div>
+      </div>
+      <div class="chat-header-info">
+        <div class="chat-header-title">
+          {{.OtherUser.Username}}
+          <span class="badge badge-dm">DM</span>
+        </div>
+        <div class="chat-header-subtitle">
+          {{if .OtherUser.IsOnline}}🟢 Онлайн{{else}}⚫ Офлайн{{end}}
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <div class="connection-status disconnected" id="conn-status">
+          <div class="connection-dot"></div>
+          <span id="conn-text">підключення...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="messages-container" id="messages">
+      {{range .Messages}}
+        <div class="message-group {{if eq .Author.ID $.User.ID}}own{{end}} fade-in" data-msg-id="{{.ID}}">
+          {{if ne .Author.ID $.User.ID}}
+            <div class="message-avatar">
+              <div class="avatar avatar-sm">
+                {{if .Author.Avatar}}
+                  <img src="/media/{{.Author.Avatar}}" alt="{{.Author.Username}}">
+                {{else}}
+                  {{.Author.GetInitials}}
+                {{end}}
+              </div>
+            </div>
+          {{end}}
+          <div class="messages-content">
+            <div class="message-meta">
+              <span class="message-author">{{.Author.Username}}</span>
+              <span class="message-time">{{.CreatedAt.Format "15:04"}}</span>
+            </div>
+            <div class="message-bubble">{{.Content}}</div>
+          </div>
+        </div>
+      {{else}}
+        <div class="empty-state">
+          <div class="empty-icon">💬</div>
+          <div class="empty-title">Початок розмови</div>
+          <div class="empty-text">Напишіть перше повідомлення {{.OtherUser.Username}}!</div>
+        </div>
+      {{end}}
+    </div>
+
+    <div class="typing-indicator" id="typing-indicator" style="display:none">
+      <div class="typing-dots">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+      <span id="typing-text"></span>
+    </div>
+
+    <div class="chat-input-area">
+      <div class="input-wrapper">
+        <textarea class="message-input" id="chat-input" placeholder="Повідомлення..." rows="1" maxlength="5000"></textarea>
+        <div class="input-actions">
+          <button class="send-btn" id="send-btn">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+{{define "extra_js"}}
+<script>
+  const ROOM_SLUG = "{{.Room.Slug}}";
+  const CURRENT_USER = "{{.User.Username}}";
+  const CURRENT_USER_ID = {{.User.ID}};
+  const INITIALS = "{{.UserInitials}}";
+  const UPLOAD_URL = "/room/{{.Room.Slug}}/upload/";
+  const CSRF_TOKEN = "";
+</script>
+<script src="/static/js/chat.js"></script>
+{{end}}

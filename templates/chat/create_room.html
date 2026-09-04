@@ -1,0 +1,57 @@
+{{template "base" .}}
+{{define "title"}}Нова кімната — VibeChat{{end}}
+{{define "body"}}
+<div class="app-layout">
+  {{template "sidebar" .}}
+
+  <div class="main-content" style="overflow-y: auto;">
+    <div class="create-room-page fade-in">
+      <div class="page-header">
+        <h1 class="page-title">➕ Нова кімната</h1>
+        <p class="page-subtitle">Налаштуйте кімнату для спілкування</p>
+      </div>
+
+      <form method="post" action="/room/create/" style="display: flex; flex-direction: column; gap: 24px;">
+
+        <div class="form-group">
+          <label class="form-label">Назва кімнати</label>
+          <input type="text" name="name" class="form-input" placeholder="Назва..." value="{{.FormName}}">
+          {{with (index .Errors "name")}}<span class="form-error">⚠️ {{.}}</span>{{end}}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Тип кімнати</label>
+          <select name="room_type" class="form-input">
+            <option value="public" {{if eq .FormType "public"}}selected{{end}}>Публічна</option>
+            <option value="private" {{if eq .FormType "private"}}selected{{end}}>Приватна</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Опис</label>
+          <textarea name="description" class="form-input" rows="3" placeholder="Опис кімнати...">{{.FormDesc}}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Іконка</label>
+          <div class="emoji-grid">
+            {{range .IconChoices}}
+              <div>
+                <input type="radio" name="icon" id="icon-{{.}}" value="{{.}}" class="emoji-radio">
+                <label for="icon-{{.}}" class="emoji-label">{{.}}</label>
+              </div>
+            {{end}}
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button type="submit" class="btn btn-primary">
+            🚀 Створити кімнату
+          </button>
+          <a href="/" class="btn btn-ghost">Скасувати</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{end}}

@@ -1,0 +1,98 @@
+{{template "base" .}}
+{{define "title"}}VibeChat — Головна{{end}}
+{{define "body"}}
+<div class="app-layout">
+  {{template "sidebar" .}}
+
+  <div class="home-layout">
+    <div class="home-content">
+
+      <div class="page-header fade-in">
+        <h1 class="page-title">Ласкаво просимо, {{.User.Username}}! 👋</h1>
+        <p class="page-subtitle">Оберіть кімнату або розпочніть особисте листування</p>
+      </div>
+
+      <div class="section-title">🌍 Публічні кімнати</div>
+      <div class="rooms-grid fade-in">
+        {{range .PublicRooms}}
+          <a href="/room/{{.Slug}}/" class="room-card">
+            <div class="room-card-icon">{{.Icon}}</div>
+            <div class="room-card-name">{{.Name}}</div>
+            <div class="room-card-desc">{{if .Description}}{{.Description}}{{else}}Приєднуйся до бесіди!{{end}}</div>
+            <div class="room-card-meta">
+              <span class="badge badge-public">публічна</span>
+            </div>
+          </a>
+        {{else}}
+          <div class="empty-state">
+            <div class="empty-icon">🏚️</div>
+            <div class="empty-title">Немає кімнат</div>
+            <div class="empty-text">Будьте першим — створіть нову кімнату!</div>
+          </div>
+        {{end}}
+
+        <a href="/room/create/" class="create-room-card">
+          <div class="create-room-icon">➕</div>
+          <div class="create-room-text">Створити кімнату</div>
+        </a>
+      </div>
+
+      {{if .MyRooms}}
+        <div class="section-title">🔒 Мої приватні кімнати</div>
+        <div class="rooms-grid fade-in">
+          {{range .MyRooms}}
+            <a href="/room/{{.Slug}}/" class="room-card">
+              <div class="room-card-icon">{{.Icon}}</div>
+              <div class="room-card-name">{{.Name}}</div>
+              <div class="room-card-desc">{{if .Description}}{{.Description}}{{else}}Приватна кімната{{end}}</div>
+              <div class="room-card-meta">
+                <span class="badge badge-private">приватна</span>
+              </div>
+            </a>
+          {{end}}
+        </div>
+      {{end}}
+
+    </div>
+
+    <div class="home-sidebar">
+      <div class="online-section-title">
+        <span class="online-dot-sm"></span>
+        Онлайн зараз
+      </div>
+
+      {{range .OnlineUsers}}
+        <a href="/dm/{{.Username}}/" class="online-user-item">
+          <div class="user-avatar">
+            <div class="avatar avatar-sm">
+              {{if .Avatar}}
+                <img src="/media/{{.Avatar}}" alt="{{.Username}}">
+              {{else}}
+                {{.GetInitials}}
+              {{end}}
+            </div>
+            <div class="online-dot"></div>
+          </div>
+          <span>{{.Username}}</span>
+        </a>
+      {{else}}
+        <div style="font-size: 13px; color: var(--text-muted); padding: 8px;">
+          Нікого онлайн 😴
+        </div>
+      {{end}}
+
+      <div class="divider" style="margin: 20px 0;"></div>
+
+      <div class="online-section-title">
+        🔗 Швидкі дії
+      </div>
+      <a href="/users/" class="nav-item" style="margin-bottom: 6px;">
+        👥 Всі користувачі
+      </a>
+      <a href="/accounts/profile/" class="nav-item">
+        ⚙️ Мій профіль
+      </a>
+    </div>
+  </div>
+</div>
+{{end}}
